@@ -1,5 +1,7 @@
 import discord
 import os
+import sqlite3
+from sqlite3 import Error
 from discord.ext import commands
 import dotenv
 import logging
@@ -16,11 +18,21 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix=',',  intents=intents)
 
+def create_connection(path):
+    connection = None
+    try:
+        connection = sqlite3.connect(path)
+        print('connected to the sqlite db')
+    except Error as e:
+        print(f'the error {e} has occured')
+
+
 @bot.event
 async def on_ready():
     assert bot.user is not None
     print(f'Logged in as {bot.user} with id {bot.user.id}')
     print('------------')
+    create_connection('kps-score.db')
 
 
 @bot.command()
