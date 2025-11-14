@@ -15,7 +15,6 @@ token = os.getenv('TOKEN')
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
-#TODO: FIXA POÄNGEN FÖR EN GÅNGS SKULL!!!!
 
 
 
@@ -42,18 +41,32 @@ async def on_ready():
     print(f'Logged in as {bot.user} with id {bot.user.id}')
     print('------------')
     members = bot.get_all_members()
-    for member in members:
-        cursor.execute(f"INSERT INTO scores VALUES ({member.id}, 0)")
     print('Success!!!!?')
     cursor.execute('SELECT * FROM scores')
     results = cursor.fetchall()
-    print(results)
+    if results[0][0] == 0:
+        for member in members:
+            cursor.execute(f"INSERT INTO scores VALUES ({member.id}, 0)")
+
+@bot.event()
+async def on_member_join(member):
+
+    cursor.execute(f'INSERT INTO scores VALUES {member.id}, 0.0')
+    await member.send(f'Welcum to the server {member.name}')
+
 @bot.command()
 async def testing(ctx, message:str):
     if message is not None:
         await ctx.send(f'Why did you send {message}')
     if message is None:
         await ctx.send('Dude you need to write something too')
+
+
+@bot.command()
+async def list_all(ctx):
+    cursor.execute('SELECT * FROM scores')
+    result = cursor.fetchall()
+    print(result)
 
 
 @bot.command()
